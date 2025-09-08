@@ -4,7 +4,9 @@ const NumeriUtente = document.getElementById("answers-form");
 const bottone = document.querySelector(".btn");
 const messaggio = document.getElementById("message");
 
-let seconds = 30;
+let seconds = 10;
+const minimo = 10;
+const massimo = 50;
 cronometro.textContent = seconds--;
 
 const intervalId = setInterval(function () {
@@ -26,7 +28,7 @@ const intervalId = setInterval(function () {
 
 
 // ottengo un array di numeri casuali
-const arrayNumbers = arrayUniqueNumbers(10,50,5);
+const arrayNumbers = arrayUniqueNumbers(minimo,massimo,5);
 
 // inserisco i numeri ottenuti negli elementi HTML
 stampaLista(arrayNumbers);
@@ -69,12 +71,60 @@ bottone.addEventListener("click",
         let numCorretti = 0;
         const listaCorretti =[];
         const listaUtente = document.querySelectorAll(".form-control");
+        //converto le stringhe in numeri
+        const listaUtenteInt=[];
         for (i=0; i<listaUtente.length; i++){
-            if (arrayNumbers.includes(parseInt(listaUtente[i].value))){
-                numCorretti++;
-                listaCorretti.push(listaUtente[i].value);
-            }
+            listaUtenteInt[i] = parseInt(listaUtente[i].value);
         }
-        messaggio.textContent = "Hai indovinato " +numCorretti+ " numeri: " +listaCorretti;
+        const controllo = numberValidation(listaUtenteInt);
+        if (controllo){
+            for (i=0; i<listaUtente.length; i++){
+                if (arrayNumbers.includes(listaUtenteInt[i])){
+                    numCorretti++;
+                    listaCorretti.push(listaUtente[i].value);
+                }
+            }
+            messaggio.textContent = "Hai indovinato " +numCorretti+ " numeri: " +listaCorretti;
+            bottone.disabled = true;
+            console.log("tutto ok");
+        }
     }
 )
+
+function numberValidation(lista){
+    let validazione = false;
+    //controllo che non ci siano valori fuori dai valori consentiti
+    let valido = true;
+    for (i=0; i<lista.length && valido === true; i++){
+        if (lista[i]<minimo || lista[i]>massimo){
+            valido = false;
+        }
+    }
+    //controllo che non ci siano numeri uguali
+    const listaUtenteUnici = new Set(lista);
+    let diversi;
+    if (listaUtenteUnici.size === lista.length){
+        diversi = true;
+    }
+    else{
+        diversi = false;
+    }
+    //gestisco i 4 casi possibili
+    if (diversi && valido){    
+        validazione = true;
+        return validazione;
+    }
+    else if(!diversi && !valido){
+        messaggio.textContent = "ATTENZIONE! Hai inserito dei numeri uguali e fuori dai valori limite";
+        console.log("niente ok");
+    }
+    else if(!diversi){
+        messaggio.textContent = "ATTENZIONE! Hai inserito dei numeri uguali";
+        console.log("numeri uguali");
+    }
+    else{
+        messaggio.textContent = "ATTENZIONE! Hai inserito dei numeri fuori dai valori limite";
+        console.log("valori sballati");
+    }
+    return validazione;
+}
