@@ -45,7 +45,7 @@ function arrayUniqueNumbers(numMin, numMax, numberElements) {
     // mi creo un array vuoto di partenza
     const arrayNum =[];
 
-    // ciclo l'array creato FINO CHE è più corto di numberElemnts
+    // ciclo finchè non ottengo il numero di numeri diversi richiesti
     // genero un numero random in un range
     let i=0; 
     while (i<numberElements){
